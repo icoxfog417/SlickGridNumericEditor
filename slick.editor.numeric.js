@@ -9,16 +9,14 @@
   $.extend(true, window, {
     "Slick": {
       "Editors": {
-        "Custom": {
-          "NumericEditor": NumericEditor
-        }
+        "Numeric": NumericEditor
       }
     }
   });
 
   function NumericEditor(args) {
     var $input;
-    var defaultValue;
+    var defaultValue = "";
     var scope = this;
     var lang = "";
     var numberInputCount = 0;
@@ -33,7 +31,7 @@
     
     this.init = function () {
       numberInputCount = 0;
-      location = this.getLang();
+      lang = this.getLang();
 
       $input = $("<INPUT type='text' class='editor-text' />")
         .appendTo(args.container)
@@ -46,8 +44,6 @@
         })
         .focus()
         .select();
-
-      setContextMenu($input);
 
     };
 
@@ -67,7 +63,7 @@
     };
 
     this.serializeValue = function () {
-      return parseFloat($input.val());
+      return ($input.val() == "") ? "" : parseFloat($input.val());
     };
 
     this.applyValue = function (item, state) {
@@ -82,7 +78,7 @@
       var msg = "";
       var dfMsg = "";
       for(var lg in msgs){
-        if(lg == this.lang){
+        if(lg == lang){
           msg = msgs[lg];
         }else if(lg == "default"){
           dfMsg = msgs[lg];
@@ -97,16 +93,13 @@
     }
 
     this.validate = function () {
-      if (isNaN($input.val()) || $input.val() == "") {
-        return {
-          valid: false,
-          msg: this.chooseMsg({"ja":"数値を入力してください","default":"Please enter a number"})
-        };
-      }else if(parseFloat($input.val()) < 0){
-        return {
-          valid: false,
-          msg: this.chooseMsg({"ja":"正の値を入力してください","default":"Please enter a valid positive number"})
-        };					
+      if ($input.val() != "") {
+        if (isNaN($input.val())) {
+          return {
+            valid: false,
+            msg: this.chooseMsg({ "ja": "数値を入力してください", "default": "Please enter a number" })
+          };
+        }
       }
 
       return {
